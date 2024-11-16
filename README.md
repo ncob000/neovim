@@ -1,4 +1,5 @@
 # nv
+```
 .
 ├── README.md
 ├── init.lua
@@ -12,6 +13,9 @@
         │   └── options.lua
         ├── lazy.lua
         └── plugins
+            ├── lsp
+            │   ├── lspconfig.lua
+            │   └── mason.lua
             ├── auto-session.lua
             ├── autopairs.lua
             ├── codeium.lua
@@ -19,9 +23,6 @@
             ├── dressing.lua
             ├── init.lua
             ├── linting.lua
-            ├── lsp
-            │   ├── lspconfig.lua
-            │   └── mason.lua
             ├── lualine.lua
             ├── nvi-tree.lua
             ├── nvim-cmp.lua
@@ -32,3 +33,4 @@
             ├── vim-maximizer.lua
             ├── which-key.lua
             └── zenmode.lua
+```
