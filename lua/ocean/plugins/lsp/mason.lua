@@ -11,12 +11,7 @@ return {
         mason.setup({
             mason_lspconfig.setup({
                 ensure_installed = {
-                    "bashls",
-                    "clangd",
-                    "ltex",
-                    "grammarly",
-                    "pyright",
-                    "yamlls",
+
                 }
             })
         })

@@ -14,6 +14,18 @@ return {
         javascript = { "template_string" },
         java = false
       },
+              disable_filetype = { "TelescopePrompt", "vim" }, -- Archivos donde no se habilitará.
+      fast_wrap = {
+        map = "<M-e>", -- Mapeo para envoltura rápida (opcional).
+        chars = { "{", "[", "(", '"', "'" },
+        pattern = [=[[%'%"%>%]%)%}%,]]=],
+        offset = 0, -- Ajusta la posición del cursor tras envolver.
+        end_key = "$",
+        keys = "qwertyuiopzxcvbnmasdfghjkl",
+        check_comma = true,
+        highlight = "PmenuSel",
+        highlight_grey = "LineNr",
+      },
     })
 
     local cmp_autopairs = require("nvim-autopairs.completion.cmp")
