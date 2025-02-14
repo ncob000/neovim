@@ -1,4 +1,1 @@
-# nvim dotfiles
-
-- Last changes: January 28, 2025
-
+# nvim config
