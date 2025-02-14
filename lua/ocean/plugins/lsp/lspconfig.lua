@@ -1,76 +1,104 @@
 return {
-  "neovim/nvim-lspconfig",
-  event = { "BufReadPre", "BufNewFile" },
-  dependencies = {
-    "hrsh7th/cmp-nvim-lsp",
-    { "antosha417/nvim-lsp-file-operations", config = true },
-    { "folke/neodev.nvim", opts = {} },
-  },
-  config = function()
-    local lspconfig = require("lspconfig")
-    local mason_lspconfig = require("mason-lspconfig")
-    local cmp_nvim_lsp = require("cmp_nvim_lsp")
-    local keymap = vim.keymap -- for conciseness
+    "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = {
+        "hrsh7th/cmp-nvim-lsp",
+        { "antosha417/nvim-lsp-file-operations", config = true },
+        { "folke/neodev.nvim",                   opts = {} },
+    },
+    config = function()
+        local lspconfig = require("lspconfig")
+        local mason_lspconfig = require("mason-lspconfig")
+        local cmp_nvim_lsp = require("cmp_nvim_lsp")
+        local keymap = vim.keymap
 
-    -- LSP attach autocmd
-    vim.api.nvim_create_autocmd("LspAttach", {
-      group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-      callback = function(ev)
-        local opts = { buffer = ev.buf, silent = true }
-
-        -- LSP key mappings
-        keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", vim.tbl_extend("force", opts, { desc = "Show LSP references" }))
-        keymap.set("n", "gD", vim.lsp.buf.declaration, vim.tbl_extend("force", opts, { desc = "Go to declaration" }))
-        keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", vim.tbl_extend("force", opts, { desc = "Show LSP definitions" }))
-        keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", vim.tbl_extend("force", opts, { desc = "Show LSP implementations" }))
-        keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", vim.tbl_extend("force", opts, { desc = "Show LSP type definitions" }))
-        keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "See available code actions" }))
-        keymap.set("n", "<leader>rn", vim.lsp.buf.rename, vim.tbl_extend("force", opts, { desc = "Smart rename" }))
-        keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", vim.tbl_extend("force", opts, { desc = "Show buffer diagnostics" }))
-        keymap.set("n", "<leader>d", vim.diagnostic.open_float, vim.tbl_extend("force", opts, { desc = "Show line diagnostics" }))
-        keymap.set("n", "[d", vim.diagnostic.goto_prev, vim.tbl_extend("force", opts, { desc = "Go to previous diagnostic" }))
-        keymap.set("n", "]d", vim.diagnostic.goto_next, vim.tbl_extend("force", opts, { desc = "Go to next diagnostic" }))
-        keymap.set("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "Show documentation for what is under cursor" }))
-        keymap.set("n", "<leader>rs", ":LspRestart<CR>", vim.tbl_extend("force", opts, { desc = "Restart LSP" }))
-      end,
-    })
-
-    -- Autocompletion capabilities
-    local capabilities = cmp_nvim_lsp.default_capabilities()
-
-    -- Custom Diagnostic icons
-    local signs = { Error = "", Warn = "", Hint = "󰠠", Info = "" }
-    for type, icon in pairs(signs) do
-      local hl = "DiagnosticSign" .. type
-      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-    end
-
-    -- Mason LSP setup
-    mason_lspconfig.setup_handlers({
-      -- Default handler for installed LSPs
-      function(server_name)
-        lspconfig[server_name].setup({
-          capabilities = capabilities,
-        })
-      end,
-
-      -- Specific LSP configuration for Lua
-      ["lua_ls"] = function()
-        lspconfig["lua_ls"].setup({
-          capabilities = capabilities,
-          settings = {
-            Lua = {
-              diagnostics = {
-                globals = { "vim" },
-              },
-              completion = {
-                callSnippet = "Replace",
-              },
+        -- 🔹 Configuración de diagnósticos
+        vim.diagnostic.config({
+            underline = false,
+            virtual_text = {
+                spacing = 2,
+                prefix = "●",
             },
-          },
+            update_in_insert = false,
+            severity_sort = true,
+            float = { border = "rounded" },
         })
-      end,
-    })
-  end,
-}
 
+        -- 🔹 Iconos de diagnóstico personalizados
+        local signs = { Error = "", Warn = "", Hint = "󰠠", Info = "" }
+        for type, icon in pairs(signs) do
+            local hl = "DiagnosticSign" .. type
+            vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+        end
+
+        -- 🔹 Manejo de capacidades para autocompletado
+        local capabilities = cmp_nvim_lsp.default_capabilities()
+        capabilities.textDocument.completion.completionItem.snippetSupport = true
+
+        -- 🔹 Keymaps para LSP
+        vim.api.nvim_create_autocmd("LspAttach", {
+            group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+            callback = function(ev)
+                local opts = { buffer = ev.buf, silent = true }
+
+                keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
+                keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+                keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
+                keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
+                keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts)
+                keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
+                keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+                keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts)
+                keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts)
+                keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
+                keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+                keymap.set("n", "K", vim.lsp.buf.hover, opts)
+                keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
+            end,
+        })
+        lspconfig.clangd.setup({
+            on_attach = function(client, bufnr)
+                client.server_capabilities.documentFormattingProvider = true
+                vim.api.nvim_buf_set_option(bufnr, "shiftwidth", 4) -- Indentación de 4 espacios
+                vim.api.nvim_buf_set_option(bufnr, "tabstop", 4) -- Configura tabulaciones en 4 espacios
+            end,
+            settings = {
+                ["clangd"] = {
+                    fallbackFlags = { "--style={IndentWidth: 4}" }
+                }
+            }
+        })
+
+
+        -- 🔹 Configuración para servidores instalados con Mason
+        mason_lspconfig.setup_handlers({
+            -- Configuración por defecto
+            function(server_name)
+                lspconfig[server_name].setup({
+                    capabilities = capabilities,
+                })
+            end,
+
+            -- Configuración específica para Lua
+            ["lua_ls"] = function()
+                lspconfig["lua_ls"].setup({
+                    capabilities = capabilities,
+                    settings = {
+                        Lua = {
+                            diagnostics = {
+                                globals = { "vim" },
+                            },
+                            workspace = {
+                                library = vim.api.nvim_get_runtime_file("", true),
+                                checkThirdParty = false,
+                            },
+                            completion = {
+                                callSnippet = "Replace",
+                            },
+                        },
+                    },
+                })
+            end,
+        })
+    end,
+}
